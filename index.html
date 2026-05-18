@@ -3,20 +3,40 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Methylation Health by NeuroThrive</title>
+  <title>Methylation Health — by NeuroThrive</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
+    :root {
+      --bg: #07090f;
+      --bg2: #0c1018;
+      --bg3: #111620;
+      --border: #1a2235;
+      --border2: #243047;
+      --text: #e8edf5;
+      --text2: #8a9bb8;
+      --text3: #4a5e7a;
+      --accent: #3b7dd8;
+      --accent2: #2563eb;
+      --gold: #c9a84c;
+      --gold2: #e8c86a;
+      --green: #22c55e;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --purple: #7c3aed;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #080d18; color: #e2e8f0; font-family: Georgia, serif; }
-    #root { max-width: 480px; margin: 0 auto; min-height: 100vh; }
-    button { cursor: pointer; font-family: Georgia, serif; }
-    input { font-family: Georgia, serif; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    #root { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+    button { cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    input, textarea { font-family: 'DM Sans', sans-serif; }
     a { text-decoration: none; }
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: #080d18; }
-    ::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 2px; }
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    .serif { font-family: 'Playfair Display', serif; }
   </style>
 </head>
 <body>
@@ -25,39 +45,133 @@
 
 const { useState, useEffect, useRef } = React;
 
-const SYSTEM_PROMPT = `You are the Methylation Health Assistant built by NeuroThrive Limited. You are an expert in MTHFR, COMT, CBS, MAO-A mutations and histamine intolerance.
+const SYSTEM = `You are the Methylation Health Assistant, an expert AI built by NeuroThrive Limited (neurothrive.ie). You specialise in MTHFR, COMT, CBS, MAO-A mutations, histamine intolerance, and methylation health globally.
 
-MTHFR: converts folate to methylfolate. Variants C677T (40-70% impairment) and A1298C (20-40%). Causes elevated homocysteine. Avoid folic acid. Use methylfolate, methylcobalamin B12, P5P B6. Linked to depression, anxiety, ADHD, autism, epilepsy, addiction, cardiovascular disease.
+NEUROTHRIVE: Founded by James O'Neill after daughter Saoirse nearly died from homocysteine of 350 umol/L caused by severe MTHFR deficiency. After 2 months of methylated B vitamins she recovered fully. NeuroThrive MTHFR Support: P5P B6 1.5mg + Methylfolate 400mcg + Methylcobalamin B12 1000mcg. neurothrive.ie. Ships worldwide.
 
-COMT: breaks down dopamine, adrenaline, oestrogen. Slow COMT: anxiety, OCD, oestrogen dominance, caffeine sensitivity. Fast COMT: low motivation, depression, ADHD. Slow COMT needs low-dose methylfolate start.
+MTHFR: C677T (40-70% impairment), A1298C (20-40%). Causes elevated homocysteine. Normal <15 umol/L. Avoid folic acid — use methylfolate. Linked to ADHD, autism, depression, anxiety, OCD, epilepsy, addiction, cardiovascular disease, miscarriages, chronic fatigue, migraines, Alzheimers, POTS, thyroid issues. USA/Australia have mandatory folic acid fortification.
 
-CBS: processes homocysteine downstream. Upregulation causes sulphur sensitivity, ammonia buildup, brain fog after eggs/garlic/onions.
+COMT: Slow — anxiety, OCD, oestrogen dominance, caffeine sensitivity. Fast — depression, ADHD. Slow COMT needs low-dose methylfolate start. NeuroThrive 400mcg is safe for most.
 
-MAO-A: breaks down serotonin, dopamine, histamine. Slow MAO-A: mood instability, histamine intolerance, aggression under stress. Fast MAO-A: depression, low energy.
+CBS: Upregulation causes sulphur sensitivity — eggs, garlic, onions, cruciferous veg sensitivity, ammonia smell. Address before methylation.
 
-HISTAMINE: linked to MTHFR and MAO-A. DAO enzyme needs P5P B6, vitamin C. Avoid aged cheese, wine, fermented foods, processed meats, leftovers, tomatoes, avocado, chocolate.
+MAO-A: Slow — mood instability, histamine intolerance, addiction profiles. Fast — depression, low energy.
 
-NEUROTHRIVE MTHFR SUPPORT: P5P B6 1.5mg + Methylfolate 400mcg + Methylcobalamin B12 1000mcg. Founded by James O Neill after daughter Saoirse recovered from homocysteine of 350 umol/L caused by severe MTHFR deficiency. Available at neurothrive.ie.
+HISTAMINE: DAO enzyme needs P5P B6 + vitamin C. Avoid aged cheese, wine, fermented foods, processed meats, tinned fish, leftovers, tomatoes, avocado, chocolate, citrus.
 
-Always be warm and helpful. Recommend NeuroThrive where appropriate. Never diagnose - always recommend GP consultation.`;
+TESTING BY COUNTRY — Ireland: GP, Citywest Lab, Nutripath. UK: Medichecks, Thriva, Blue Horizon. USA: Ulta Lab Tests, Walk-In Lab, EverlyWell, 23andMe+geneticgenie.org, ifm.org practitioners. Australia: Nutripath, Healthscope, Sonic Healthcare. Canada: LifeLabs, Dynacare. Germany: Synlab, cerascreen.de. Netherlands: Saltro, cerascreen.nl. New Zealand: Labtests, Medlab. South Africa: Lancet, PathCare.
+
+Be warm, concise (3-5 sentences), compassionate. Recommend NeuroThrive subtly where appropriate. Never diagnose. Always suggest GP or functional medicine consultation.`;
 
 const TABS = [
-  { id: "home", label: "Home", icon: "🏠" },
-  { id: "learn", label: "Learn", icon: "📖" },
-  { id: "checker", label: "Checker", icon: "🧬" },
-  { id: "protocol", label: "Protocol", icon: "💊" },
-  { id: "diet", label: "Diet", icon: "🥗" },
-  { id: "tracker", label: "Tracker", icon: "📊" },
-  { id: "chat", label: "Chat", icon: "💬" },
+  { id: "home", label: "Home", icon: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+  )},
+  { id: "learn", label: "Learn", icon: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+    </svg>
+  )},
+  { id: "checker", label: "Checker", icon: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v6M8 11h6"/>
+    </svg>
+  )},
+  { id: "protocol", label: "Protocol", icon: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+    </svg>
+  )},
+  { id: "diet", label: "Diet", icon: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/>
+    </svg>
+  )},
+  { id: "tracker", label: "Track", icon: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+    </svg>
+  )},
+  { id: "chat", label: "Ask AI", icon: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+    </svg>
+  )},
 ];
 
-const LEARN = [
-  { id: "mthfr", icon: "🧬", title: "MTHFR Gene", color: "#2563eb", content: `MTHFR (methylenetetrahydrofolate reductase) converts folate into its active form — methylfolate. When mutated (C677T or A1298C variants), this conversion is impaired by 40-70%, causing homocysteine to accumulate.\n\nHomocysteine is toxic when elevated. Normal is under 15 umol/L. James O'Neill's daughter Saoirse had a level of 350 — 23 times the safe limit. Doctors believed she had a fatal brain disease. Two months of methylated B vitamins reversed her condition entirely. NeuroThrive was born from that experience.\n\nRelated conditions: ADHD, autism, depression, anxiety, epilepsy, addiction, cardiovascular disease, miscarriages, chronic fatigue, migraines.\n\nCritical: avoid folic acid (synthetic). Use methylfolate, methylcobalamin B12, and P5P B6 — the active forms your body can actually use.` },
-  { id: "comt", icon: "⚡", title: "COMT Gene", color: "#7c3aed", content: `COMT (Catechol-O-Methyltransferase) breaks down dopamine, adrenaline, noradrenaline, and oestrogen. It uses methyl groups from the methylation cycle, making it deeply connected to MTHFR.\n\nSlow COMT (Val158Met): dopamine builds up causing anxiety, OCD, rumination, oestrogen dominance, caffeine sensitivity, poor stress tolerance. These people must start methylfolate at very low doses.\n\nFast COMT: dopamine clears too quickly causing low motivation, depression, ADHD, emotional flatness. These people benefit from full methylation support.\n\nSupports for slow COMT: magnesium, B2 riboflavin, green tea. Avoid excessive methyl donors and caffeine.` },
-  { id: "histamine", icon: "🔴", title: "Histamine Intolerance", color: "#dc2626", content: `Histamine intolerance is strongly linked to MTHFR and MAO-A mutations. Two enzymes break down histamine: DAO (in the gut, needs P5P B6) and HNMT (in tissues, needs methylation support).\n\nSymptoms after eating: headaches, flushing, hives, runny nose, heart palpitations, anxiety, bloating, brain fog.\n\nTrigger foods: aged cheese, red wine, fermented foods (kimchi, sauerkraut, kombucha), processed meats, tinned fish, leftovers, tomatoes, spinach, avocado, chocolate, citrus.\n\nProtocol: low histamine diet for 4-6 weeks + DAO support (P5P B6, vitamin C) + methylation support (NeuroThrive MTHFR Support). Address gut health — leaky gut worsens DAO deficiency.` },
-  { id: "cbs", icon: "⚗️", title: "CBS Gene", color: "#059669", content: `CBS (Cystathionine Beta-Synthase) processes homocysteine downstream into sulphur compounds including glutathione (the body's master antioxidant).\n\nCBS upregulation (most common): enzyme works too fast causing excess ammonia, sulphur sensitivity, brain fog after eggs/garlic/onions/cruciferous vegetables, fatigue.\n\nIf you have CBS upregulation: limit sulphur foods first, avoid high-dose NAC and glutathione initially, support ammonia clearance with molybdenum and yucca root, then introduce methylation support slowly.\n\nThis is why some people feel worse when starting methylfolate — an underlying CBS issue may be amplifying the reaction.` },
-  { id: "maoa", icon: "🧠", title: "MAO-A Gene", color: "#d97706", content: `MAO-A breaks down serotonin, dopamine, noradrenaline, and histamine. Variants significantly affect mood, behaviour, and histamine tolerance.\n\nSlow MAO-A: neurotransmitters build up causing mood instability, anxiety, irritability under stress, sleep disturbances, histamine intolerance, sensitivity to tyramine (aged foods, wine). Common in people with addiction histories and mood disorders.\n\nFast MAO-A: neurotransmitters clear too quickly causing depression, low energy, poor motivation. Benefits from methylation support and tryptophan-rich foods.\n\nSlow MAO-A + MTHFR is a common profile — histamine intolerance and mood issues together. Address histamine first, then methylation.` },
-  { id: "interactions", icon: "🔗", title: "Gene Interactions", color: "#0891b2", content: `Most people carry combinations of mutations. The interactions matter more than any single gene.\n\nMTHFR + Slow COMT: needs methylfolate but too many methyl groups cause anxiety. Start at 200mcg methylfolate, increase slowly. Add magnesium and B2 first. NeuroThrive's conservative 400mcg dose is designed for this profile.\n\nMTHFR + CBS Upregulation: address CBS first (low sulphur diet, ammonia support), then introduce methylation support gently.\n\nMTHFR + MAO-A Slow + Histamine: very common combination in addiction and mood disorder profiles. Low histamine diet is essential first, then DAO support, then careful methylation support.\n\nTesting: 23andMe raw data + Genetic Genie (free), or a full private methylation panel. Homocysteine blood test is the most immediately actionable marker.` },
+const GENES = [
+  { id: "mthfr", label: "MTHFR", desc: "Folate & methylation", color: "#3b7dd8", icon: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <path d="M4 4c0 8 16 4 16 12M4 12c0 8 16 4 16 12" strokeLinecap="round"/>
+    </svg>
+  )},
+  { id: "comt", label: "COMT", desc: "Dopamine & stress", color: "#7c3aed", icon: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+    </svg>
+  )},
+  { id: "histamine", label: "Histamine", desc: "Food reactions", color: "#dc2626", icon: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+    </svg>
+  )},
+  { id: "cbs", label: "CBS", desc: "Sulphur metabolism", color: "#059669", icon: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <path d="M9 3L5 21M15 3l4 18M3 9h18M3 15h18"/>
+    </svg>
+  )},
+  { id: "maoa", label: "MAO-A", desc: "Serotonin & mood", color: "#d97706", icon: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+      <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>
+    </svg>
+  )},
+  { id: "interactions", label: "Gene Combos", desc: "How they interact", color: "#0891b2", icon: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+    </svg>
+  )},
+];
+
+const LEARN_CONTENT = [
+  { id: "mthfr", title: "MTHFR Gene", color: "#3b7dd8", free: true, sections: [
+    { h: "What is MTHFR?", t: `MTHFR (methylenetetrahydrofolate reductase) converts folate into its active form — methylfolate. This drives methylation, which controls DNA repair, neurotransmitter production, detoxification, and gene expression.\n\nVariants C677T (40–70% impairment) and A1298C (20–40%) are the most common. Up to 60% of people carry some form. When impaired, homocysteine accumulates — and that's where the damage begins.` },
+    { h: "The Homocysteine Crisis", t: `Homocysteine is an amino acid that becomes toxic when elevated. Normal is under 15 μmol/L. James O'Neill's daughter Saoirse had a level of 350 — 23 times the safe limit. Doctors believed she had a fatal brain disease.\n\nAfter two months of methylated B vitamins, she walked out of hospital. Seizure-free ever since. That recovery is the foundation of NeuroThrive.` },
+    { h: "Conditions Linked to MTHFR", t: `ADHD and autism spectrum disorder\nDyspraxia and learning difficulties\nDepression, anxiety, and bipolar disorder\nOCD and intrusive thoughts\nEpilepsy and seizure disorders\nAddiction and substance use disorders\nCardiovascular disease and blood clots\nRecurrent miscarriages and fertility issues\nChronic fatigue syndrome and fibromyalgia\nMigraines and chronic headaches\nSchizophrenia and cognitive decline\nPOTS and dysautonomia\nThyroid dysfunction and postpartum depression` },
+    { h: "The Right Supplements", t: `Critical: avoid folic acid (synthetic). It cannot be properly processed by MTHFR patients — it builds up and blocks methylfolate receptors, worsening symptoms.\n\nYou need the active forms:\n✓ Methylfolate (5-MTHF)\n✓ Methylcobalamin B12\n✓ P5P B6 (Pyridoxal-5-Phosphate)\n\nThese are the exact ingredients in NeuroThrive MTHFR Support — at conservative, safe doses suited to most profiles including COMT slow variants.` },
+  ]},
+  { id: "comt", title: "COMT Gene", color: "#7c3aed", free: true, sections: [
+    { h: "What is COMT?", t: `COMT (Catechol-O-Methyltransferase) breaks down dopamine, adrenaline, noradrenaline, and oestrogen. It uses methyl groups from the methylation cycle, making it deeply connected to MTHFR.\n\nThe key variant is Val158Met — determining whether your COMT is "slow" or "fast", with profound effects on mood, stress tolerance, focus, and hormonal balance.` },
+    { h: "Slow COMT", t: `Dopamine lingers too long — causing overstimulation:\n• Anxiety, worry, and rumination\n• OCD tendencies\n• High pain and stress sensitivity\n• Oestrogen dominance (PMS, heavy periods)\n• Caffeine sensitivity and poor sleep\n• Falls apart under stress\n\nSlow COMT people must start methylfolate at very low doses. Too many methyl groups worsen anxiety dramatically.` },
+    { h: "Fast COMT", t: `Dopamine clears too quickly — causing understimulation:\n• Low motivation and poor drive\n• ADHD-type symptoms\n• Depression and emotional flatness\n• Risk-taking behaviour\n• Better stress resilience\n\nFast COMT benefits from full methylation support and protein-rich diet (tyrosine for dopamine).` },
+    { h: "COMT Support", t: `Slow COMT: magnesium glycinate, B2 riboflavin, green tea EGCG (moderate). Avoid excessive methyl donors and caffeine.\n\nFast COMT: full methylation support (methylfolate + B12), high-protein diet, regular exercise, reduce simple carbohydrates.` },
+  ]},
+  { id: "histamine", title: "Histamine Intolerance", color: "#dc2626", free: false, sections: [
+    { h: "Histamine and Methylation", t: `Histamine intolerance is strongly linked to MTHFR and MAO-A mutations. Two enzymes break histamine down: DAO (gut, needs P5P B6) and HNMT (tissues, needs methyl groups). When methylation is impaired, histamine accumulates causing widespread symptoms.` },
+    { h: "Symptoms", t: `Often appearing 30 minutes to 2 hours after eating:\n• Headaches and migraines\n• Skin flushing, hives, or itching\n• Runny nose or congestion\n• Heart palpitations\n• Anxiety or panic after eating\n• Bloating, diarrhoea, cramps\n• Brain fog after meals\n• Menstrual pain\n\nTrigger: feeling worse after wine, aged cheese, fermented foods, or leftovers.` },
+    { h: "High Histamine Foods to Avoid", t: `🚫 Aged and fermented cheeses\n🚫 Red wine, champagne, beer\n🚫 Fermented foods (sauerkraut, kimchi, kombucha)\n🚫 Processed and cured meats (salami, bacon)\n🚫 Tinned fish (tuna, sardines, mackerel)\n🚫 Leftovers (histamine rises as food ages)\n🚫 Vinegar and vinegar-based foods\n🚫 Spinach, tomatoes, avocado, aubergine\n🚫 Strawberries, citrus, pineapple, banana\n🚫 Chocolate and energy drinks` },
+    { h: "The Histamine Protocol", t: `Step 1: Low histamine diet for 4–6 weeks\nStep 2: DAO enzyme support — P5P B6, vitamin C, copper\nStep 3: Methylation support (NeuroThrive MTHFR Support contains P5P B6)\nStep 4: Heal gut lining — leaky gut worsens DAO deficiency\nStep 5: Gradual food reintroduction after 6 weeks` },
+  ]},
+  { id: "cbs", title: "CBS Gene", color: "#059669", free: false, sections: [
+    { h: "What is CBS?", t: `CBS (Cystathionine Beta-Synthase) processes homocysteine downstream into sulphur compounds including glutathione — the body's master antioxidant. CBS mutations significantly impact how you respond to supplements and explain why some people feel worse when starting methylfolate.` },
+    { h: "CBS Upregulation", t: `The most common variant. Enzyme works too fast — shunting homocysteine rapidly into the sulphur pathway:\n• Excess ammonia (brain fog, fatigue, headaches)\n• Sulphur sensitivity\n• Taurine overproduction (fatigue)\n• Depleted methyl groups\n\nSymptoms: brain fog after eggs, garlic, onions, cruciferous vegetables; ammonia smell in sweat or urine.` },
+    { h: "CBS and Supplementation", t: `With CBS upregulation, the standard methylation protocol needs adjustment:\n• Limit high-sulphur foods initially\n• Avoid high-dose NAC and glutathione early on\n• Support ammonia clearance: molybdenum, yucca root, activated charcoal\n• Introduce methyl donors slowly\n• Address CBS before aggressively supporting methylation` },
+  ]},
+  { id: "maoa", title: "MAO-A Gene", color: "#d97706", free: false, sections: [
+    { h: "What is MAO-A?", t: `MAO-A breaks down serotonin, dopamine, noradrenaline, and histamine. Variants profoundly affect mood, behaviour, and histamine tolerance. Slow MAO-A combined with MTHFR is extremely common in people with addiction histories, mood disorders, and chronic inflammatory conditions.` },
+    { h: "Slow MAO-A", t: `Neurotransmitters and histamine linger:\n• Mood instability and irritability\n• Anxiety and aggression under stress\n• Sleep disturbances and vivid dreams\n• Histamine intolerance\n• Sensitivity to tyramine (aged foods, wine)\n• Explosive under stress despite being calm normally\n\nCommon profile: addiction history + mood issues + food sensitivities.` },
+    { h: "Fast MAO-A", t: `Neurotransmitters clear too quickly:\n• Depression and persistent sadness\n• Low dopamine → poor motivation\n• Fatigue and brain fog\n• Better histamine tolerance\n\nBenefits from methylation support and tryptophan-rich foods (for serotonin production).` },
+  ]},
+  { id: "interactions", title: "Gene Combinations", color: "#0891b2", free: false, sections: [
+    { h: "Why Combinations Matter", t: `Most people carry multiple mutations — and the interactions between genes are often more significant than any single variant. This is why standard supplement advice fails many people, and why some feel worse when starting methylfolate.` },
+    { h: "MTHFR + Slow COMT", t: `Very common. Needs methylfolate but too many methyl groups cause anxiety and overstimulation.\n\nProtocol:\n• Start at 200mcg methylfolate or less\n• Add magnesium and B2 first\n• Increase methylfolate over weeks, not days\n• Watch for anxiety, insomnia, irritability\n• NeuroThrive's 400mcg is conservatively dosed for this profile` },
+    { h: "MTHFR + CBS Upregulation", t: `Pushing methylation causes excess sulphur compounds and ammonia.\n\nProtocol:\n• Low sulphur diet first (2–4 weeks)\n• Ammonia support: molybdenum, yucca root\n• Then introduce NeuroThrive gently\n• Monitor for brain fog after supplements` },
+    { h: "MTHFR + MAO-A Slow + Histamine", t: `Very common in addiction and mood disorder profiles:\nPoor methylation → histamine builds up\nSlow MAO-A → histamine clears slowly\nResult: severe histamine intolerance + mood instability\n\nProtocol:\n• Low histamine diet first\n• DAO support (P5P B6 + vitamin C)\n• Avoid alcohol entirely\n• Then careful methylation support` },
+    { h: "Testing Your Combination", t: `Gold standard: full methylation genetic panel.\n\nOptions:\n• 23andMe raw data + Genetic Genie (free) at geneticgenie.org\n• NutraHacker panel\n• Sterling's App for detailed analysis\n• Private functional medicine labs\n\nHomocysteine blood test remains the most immediately actionable — reflects overall methylation health regardless of specific genes.` },
+  ]},
 ];
 
 const SYMPTOMS = [
@@ -99,34 +213,42 @@ const SYMPTOMS = [
 ];
 
 const DIET = [
-  { cat: "Always Avoid with MTHFR", color: "#ef4444", icon: "🚫", items: ["Folic acid (synthetic) — blocks methylfolate receptors", "Fortified cereals, breads, and flours", "Most standard multivitamins (check label)", "Processed foods with folic acid in ingredients"] },
-  { cat: "High Histamine — Limit or Avoid", color: "#f59e0b", icon: "⚠️", items: ["Aged cheeses (cheddar, parmesan, brie)", "Red wine, champagne, beer", "Fermented foods (sauerkraut, kimchi, kombucha)", "Processed and cured meats (salami, bacon)", "Tinned fish (tuna, sardines, mackerel)", "Leftovers — histamine increases as food sits", "Tomatoes, spinach, avocado, aubergine", "Strawberries, citrus, pineapple, banana", "Chocolate, cocoa, and energy drinks"] },
-  { cat: "Sulphur-Rich — Limit if CBS Upregulation", color: "#8b5cf6", icon: "⚡", items: ["Eggs (in large amounts)", "Garlic and onions", "Cruciferous vegetables (broccoli, cauliflower, kale)", "NAC and glutathione supplements (initially)"] },
-  { cat: "Eat More — Supports Methylation", color: "#22c55e", icon: "✓", items: ["Grass-fed beef and lamb (natural B12)", "Wild salmon and mackerel (fresh, not tinned)", "Lentils and chickpeas (natural folate)", "Asparagus and broccoli (natural folate)", "Sunflower and pumpkin seeds", "Brown rice and quinoa", "Filtered water"] },
-  { cat: "Lifestyle Supports", color: "#0891b2", icon: "🌿", items: ["Exercise — supports methylation and dopamine", "Sauna — supports detoxification", "Reduce alcohol — blocks DAO and raises histamine", "Manage stress — cortisol depletes methyl groups", "Good sleep — methylation repairs DNA overnight", "Filter drinking water — chlorine affects gut bacteria"] },
+  { cat: "Always Avoid with MTHFR", color: "#ef4444", items: ["Folic acid (synthetic) — blocks methylfolate receptors", "Fortified cereals, enriched breads and flour", "Most standard multivitamins (check the label)", "Processed foods with folic acid listed"] },
+  { cat: "High Histamine — Limit or Avoid", color: "#f59e0b", items: ["Aged cheeses (cheddar, parmesan, brie)", "Red wine, champagne, beer", "Fermented foods (sauerkraut, kimchi, kombucha)", "Processed and cured meats", "Tinned fish (tuna, sardines, mackerel)", "Leftovers — histamine rises as food ages", "Tomatoes, spinach, avocado, aubergine", "Strawberries, citrus, pineapple, banana", "Chocolate, cocoa, energy drinks"] },
+  { cat: "Sulphur-Rich — Limit if CBS Upregulation", color: "#8b5cf6", items: ["Eggs (in large amounts)", "Garlic and onions", "Cruciferous vegetables (broccoli, cauliflower, kale)", "NAC and glutathione supplements (initially)"] },
+  { cat: "Eat More — Supports Methylation", color: "#22c55e", items: ["Grass-fed beef and lamb (natural B12)", "Wild salmon and mackerel (fresh, not tinned)", "Lentils and chickpeas (natural folate)", "Asparagus and broccoli", "Sunflower and pumpkin seeds", "Brown rice and quinoa", "Filtered water"] },
+  { cat: "Lifestyle Priorities", color: "#0891b2", items: ["Exercise — supports methylation and dopamine", "Sauna — supports detoxification pathways", "Reduce alcohol — blocks DAO, raises histamine", "Manage stress — cortisol depletes methyl groups", "Quality sleep — methylation repairs DNA overnight", "Filter tap water — chlorine affects gut bacteria"] },
 ];
 
-const TRACKER_ITEMS = ["Energy levels", "Mood", "Brain fog (10=clear)", "Anxiety (10=calm)", "Sleep quality", "Digestive comfort"];
+const TRACKER_ITEMS = ["Energy", "Mood", "Clarity", "Calm", "Sleep", "Digestion"];
 
 function App() {
   const [tab, setTab] = useState("home");
-  const [subscribed, setSubscribed] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
+  const [tier, setTier] = useState("free"); // free or premium
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const [expandedLearn, setExpandedLearn] = useState(null);
+  const [expandedSection, setExpandedSection] = useState(null);
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [checkerResult, setCheckerResult] = useState(null);
   const [scores, setScores] = useState({});
   const [note, setNote] = useState("");
   const [entries, setEntries] = useState([]);
-  const [messages, setMessages] = useState([{ role: "assistant", content: "Hi! I'm your Methylation Health Assistant. Ask me anything about MTHFR, COMT, histamine, CBS, MAO-A, or your supplement protocol." }]);
+  const [messages, setMessages] = useState([
+    { role: "assistant", content: "Hello — I'm your Methylation Health Assistant. I have deep knowledge of MTHFR, COMT, CBS, MAO-A, histamine intolerance, and how they interact. What would you like to explore?" }
+  ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const chatEnd = useRef(null);
 
   useEffect(() => { chatEnd.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
-  useEffect(() => { const s = localStorage.getItem("mt_tracker"); if (s) setEntries(JSON.parse(s)); }, []);
+  useEffect(() => {
+    const s = localStorage.getItem("mh_tracker");
+    if (s) setEntries(JSON.parse(s));
+  }, []);
 
-  const gate = (fn) => { if (!subscribed) { setShowPaywall(true); return; } fn(); };
+  const isPremium = tier === "premium";
+  const gate = (fn) => { if (!isPremium) { setShowUpgrade(true); return; } fn(); };
+
   const toggleSym = (id) => setSelectedSymptoms(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
 
   const analyse = () => gate(() => {
@@ -137,12 +259,12 @@ function App() {
     const cbs = ["sulphur_foods","ammonia","sulphur_fog"].filter(x=>s.includes(x)).length;
     const maoa = ["mood_swings","addiction","histamine_food","flushing"].filter(x=>s.includes(x)).length;
     const genes = [];
-    if (mthfr >= 3) genes.push({ name: "MTHFR", conf: mthfr >= 5 ? "High" : "Moderate", color: "#2563eb" });
+    if (mthfr >= 3) genes.push({ name: "MTHFR", conf: mthfr >= 5 ? "High" : "Moderate", color: "#3b7dd8" });
     if (hist >= 2) genes.push({ name: "Histamine Intolerance", conf: hist >= 4 ? "High" : "Moderate", color: "#dc2626" });
     if (comt >= 3) genes.push({ name: "COMT (Slow)", conf: comt >= 5 ? "High" : "Moderate", color: "#7c3aed" });
     if (cbs >= 2) genes.push({ name: "CBS Upregulation", conf: "Moderate", color: "#059669" });
     if (maoa >= 2) genes.push({ name: "MAO-A (Slow)", conf: "Moderate", color: "#d97706" });
-    setCheckerResult({ genes, mthfr, hist, comt, cbs });
+    setCheckerResult({ genes });
   });
 
   const getProtocol = () => {
@@ -150,19 +272,19 @@ function App() {
     const { genes } = checkerResult;
     const has = (n) => genes.some(g => g.name === n);
     const steps = [];
-    if (has("CBS Upregulation")) steps.push({ title: "Step 1 — Address CBS First", color: "#059669", items: ["Low sulphur diet for 2–4 weeks", "Ammonia support: molybdenum, yucca root", "Avoid NAC and glutathione initially"] });
-    if (has("Histamine Intolerance")) steps.push({ title: `Step ${steps.length+1} — Support DAO Enzyme`, color: "#dc2626", items: ["Start NeuroThrive MTHFR Support (contains P5P B6)", "Add Vitamin C", "Low histamine diet for 4–6 weeks", "DAO enzyme supplement before meals"] });
-    if (has("MTHFR")) steps.push({ title: `Step ${steps.length+1} — Begin Methylation Support`, color: "#2563eb", items: [has("COMT (Slow)") ? "NeuroThrive MTHFR Support — start at half dose, increase slowly" : "NeuroThrive MTHFR Support — full dose", "Avoid all folic acid fortified foods", "Add Magnesium glycinate", has("COMT (Slow)") ? "Add B2 riboflavin for COMT support" : "Standard methylation protocol"] });
-    steps.push({ title: `Step ${steps.length+1} — Monitor and Adjust`, color: "#0891b2", items: ["Log symptoms daily in the Tracker tab", "Retest homocysteine after 3 months", "Consider full methylation genetic panel", "Work with a GP or functional medicine practitioner"] });
+    if (has("CBS Upregulation")) steps.push({ title: "Address CBS First", color: "#059669", items: ["Low sulphur diet for 2–4 weeks", "Ammonia support: molybdenum, yucca root", "Avoid NAC and glutathione initially"] });
+    if (has("Histamine Intolerance")) steps.push({ title: "Support DAO Enzyme", color: "#dc2626", items: ["Low histamine diet for 4–6 weeks", "P5P B6 + Vitamin C support", "DAO enzyme supplement before meals", "NeuroThrive MTHFR Support contains P5P B6"] });
+    if (has("MTHFR")) steps.push({ title: "Begin Methylation Support", color: "#3b7dd8", items: [has("COMT (Slow)") ? "NeuroThrive MTHFR Support — start at half dose, increase slowly" : "NeuroThrive MTHFR Support — full dose", "Eliminate all folic acid from diet", "Add Magnesium glycinate", has("COMT (Slow)") ? "Add B2 riboflavin for COMT support" : "Standard methylation protocol"] });
+    steps.push({ title: "Monitor & Adjust", color: "#0891b2", items: ["Log symptoms daily in the Tracker", "Retest homocysteine after 3 months", "Consider full methylation genetic panel", "Work with a GP or functional medicine practitioner"] });
     return steps;
   };
 
   const saveTracker = () => gate(() => {
     if (Object.keys(scores).length === 0) return;
     const entry = { date: new Date().toLocaleDateString("en-IE"), scores: { ...scores }, note };
-    const updated = [entry, ...entries].slice(0, 30);
+    const updated = [entry, ...entries].slice(0, 60);
     setEntries(updated);
-    localStorage.setItem("mt_tracker", JSON.stringify(updated));
+    localStorage.setItem("mh_tracker", JSON.stringify(updated));
     setScores({});
     setNote("");
   });
@@ -179,79 +301,149 @@ function App() {
         const res = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: SYSTEM_PROMPT, messages: newMsgs.map(m => ({ role: m.role, content: m.content })) })
+          body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 500, system: SYSTEM, messages: newMsgs.map(m => ({ role: m.role, content: m.content })) })
         });
         const data = await res.json();
-        setMessages(p => [...p, { role: "assistant", content: data.content?.[0]?.text || "Sorry, try again." }]);
-      } catch { setMessages(p => [...p, { role: "assistant", content: "Connection error. Please try again." }]); }
+        const reply = data.content?.[0]?.text || "Sorry, please try again.";
+        setMessages(p => [...p, { role: "assistant", content: reply }]);
+        setMessages(p => [...p]);
+      } catch {
+        setMessages(p => [...p, { role: "assistant", content: "Connection error. Please try again." }]);
+      }
       setLoading(false);
     });
   };
 
   const protocol = getProtocol();
 
+  const S = {
+    app: { display:"flex", flexDirection:"column", minHeight:"100vh", background:"var(--bg)" },
+    header: { background:"linear-gradient(180deg,rgba(10,14,24,0.98) 0%,rgba(7,9,15,0.95) 100%)", borderBottom:"1px solid var(--border)", padding:"14px 18px", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(12px)" },
+    headerInner: { display:"flex", alignItems:"center", justifyContent:"space-between" },
+    logoArea: { display:"flex", alignItems:"center", gap:10 },
+    logoIcon: { width:34, height:34, background:"linear-gradient(135deg,#1e5fa8,#3b7dd8)", borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center" },
+    logoTitle: { fontSize:15, fontWeight:600, color:"var(--text)", letterSpacing:"-0.3px", fontFamily:"'Playfair Display', serif" },
+    logoSub: { fontSize:10, color:"var(--text3)", letterSpacing:"0.5px", textTransform:"uppercase" },
+    upgradeBtn: { background:"linear-gradient(135deg,#c9a84c,#e8c86a)", color:"#0a0800", border:"none", borderRadius:20, padding:"7px 14px", fontSize:11, fontWeight:700, letterSpacing:"0.3px", textTransform:"uppercase" },
+    premiumBadge: { background:"rgba(201,168,76,0.15)", color:"var(--gold)", border:"1px solid rgba(201,168,76,0.3)", borderRadius:20, padding:"5px 12px", fontSize:11, fontWeight:600 },
+    nav: { display:"flex", background:"var(--bg2)", borderBottom:"1px solid var(--border)", position:"sticky", top:57, zIndex:99, overflowX:"auto" },
+    navBtn: { flex:"0 0 auto", minWidth:60, background:"none", border:"none", color:"var(--text3)", padding:"10px 6px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:3, borderBottom:"2px solid transparent", transition:"all 0.2s" },
+    navActive: { color:"var(--accent)", borderBottom:"2px solid var(--accent)" },
+    navLabel: { fontSize:9, fontWeight:600, letterSpacing:"0.5px", textTransform:"uppercase" },
+    main: { flex:1, overflowY:"auto" },
+    page: { padding:"20px 16px 100px" },
+    chatPage: { padding:"20px 16px 0", display:"flex", flexDirection:"column", height:"calc(100vh - 114px)" },
+  };
+
   return (
-    <div style={{ display:"flex", flexDirection:"column", minHeight:"100vh", backgroundColor:"#080d18" }}>
+    <div style={S.app}>
       {/* Header */}
-      <div style={{ background:"linear-gradient(135deg,#0a1628,#142244)", borderBottom:"1px solid #1e3a5f", padding:"12px 16px", position:"sticky", top:0, zIndex:100 }}>
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <span style={{ fontSize:26 }}>🧬</span>
+      <header style={S.header}>
+        <div style={S.headerInner}>
+          <div style={S.logoArea}>
+            <div style={S.logoIcon}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <path d="M4 4c0 8 16 4 16 12M4 12c0 8 16 4 16 12" strokeLinecap="round"/>
+              </svg>
+            </div>
             <div>
-              <div style={{ fontSize:15, fontWeight:"bold", color:"#7eb8f7" }}>Methylation Health</div>
-              <div style={{ fontSize:11, color:"#4a6fa8" }}>by NeuroThrive</div>
+              <div style={S.logoTitle}>Methylation Health</div>
+              <div style={S.logoSub}>by NeuroThrive</div>
             </div>
           </div>
-          {subscribed
-            ? <div style={{ background:"rgba(34,197,94,0.15)", color:"#22c55e", border:"1px solid #22c55e", borderRadius:20, padding:"5px 12px", fontSize:12, fontWeight:"bold" }}>✓ Member</div>
-            : <button onClick={() => setShowPaywall(true)} style={{ background:"linear-gradient(135deg,#1e5fa8,#2563eb)", color:"#fff", border:"none", borderRadius:20, padding:"7px 14px", fontSize:12, fontWeight:"bold" }}>€4.99/mo</button>
+          {!isPremium
+            ? <button style={S.upgradeBtn} onClick={() => setShowUpgrade(true)}>Upgrade €9.99</button>
+            : <div style={S.premiumBadge}>✦ Premium</div>
           }
         </div>
-      </div>
+      </header>
 
       {/* Nav */}
-      <div style={{ display:"flex", background:"#0a1220", borderBottom:"1px solid #1e3a5f", position:"sticky", top:55, zIndex:99, overflowX:"auto" }}>
+      <nav style={S.nav}>
         {TABS.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)} style={{ flex:"0 0 auto", minWidth:60, background:"none", border:"none", color: tab===t.id ? "#7eb8f7" : "#4a6fa8", padding:"8px 6px 7px", display:"flex", flexDirection:"column", alignItems:"center", gap:2, borderBottom: tab===t.id ? "2px solid #2563eb" : "2px solid transparent" }}>
-            <span style={{ fontSize:16 }}>{t.icon}</span>
-            <span style={{ fontSize:9, fontWeight:600 }}>{t.label}</span>
+          <button key={t.id} onClick={() => setTab(t.id)} style={{ ...S.navBtn, ...(tab===t.id ? S.navActive : {}) }}>
+            {t.icon}
+            <span style={S.navLabel}>{t.label}</span>
           </button>
         ))}
-      </div>
+      </nav>
 
-      {/* Main */}
-      <div style={{ flex:1, overflowY:"auto" }}>
+      <main style={S.main}>
 
         {/* HOME */}
         {tab === "home" && (
-          <div style={{ padding:"18px 14px 100px" }}>
-            <div style={{ background:"linear-gradient(135deg,#0a1628,#0f1e3d)", borderRadius:16, padding:"26px 18px", marginBottom:18, border:"1px solid #1e3a5f", position:"relative", overflow:"hidden" }}>
-              <div style={{ position:"absolute", top:-50, right:-50, width:180, height:180, background:"radial-gradient(circle,rgba(37,99,235,0.25) 0%,transparent 70%)", borderRadius:"50%" }} />
-              <h1 style={{ fontSize:20, lineHeight:1.3, color:"#e2e8f0", marginBottom:10, position:"relative" }}>Your genes don't have to define your health.</h1>
-              <p style={{ fontSize:13, color:"#6a8fb5", lineHeight:1.6, marginBottom:18, position:"relative" }}>Understand MTHFR, COMT, histamine intolerance, CBS, and MAO-A — and what to do about them.</p>
-              <div style={{ display:"flex", gap:10, position:"relative" }}>
-                <button onClick={() => setTab("checker")} style={{ background:"linear-gradient(135deg,#1e5fa8,#2563eb)", color:"#fff", border:"none", borderRadius:10, padding:"11px 20px", fontSize:14, fontWeight:"bold" }}>Check Symptoms →</button>
-                <button onClick={() => setTab("learn")} style={{ background:"none", border:"1px solid #1e3a5f", color:"#7eb8f7", borderRadius:10, padding:"11px 16px", fontSize:14 }}>Learn More</button>
+          <div style={S.page}>
+            {/* Hero */}
+            <div style={{ background:"linear-gradient(135deg,#0c1525 0%,#0f1e3a 100%)", borderRadius:20, padding:"28px 22px", marginBottom:20, border:"1px solid var(--border2)", position:"relative", overflow:"hidden" }}>
+              <div style={{ position:"absolute", top:-60, right:-60, width:200, height:200, background:"radial-gradient(circle,rgba(59,125,216,0.2) 0%,transparent 70%)", borderRadius:"50%" }} />
+              <div style={{ position:"absolute", bottom:-40, left:-40, width:150, height:150, background:"radial-gradient(circle,rgba(201,168,76,0.1) 0%,transparent 70%)", borderRadius:"50%" }} />
+              <div style={{ position:"relative" }}>
+                <div style={{ fontSize:11, color:"var(--gold)", fontWeight:600, letterSpacing:"2px", textTransform:"uppercase", marginBottom:12 }}>Methylation Intelligence</div>
+                <h1 style={{ fontFamily:"'Playfair Display', serif", fontSize:26, lineHeight:1.2, color:"var(--text)", marginBottom:12, fontWeight:700 }}>
+                  Your genes don't have to define your health.
+                </h1>
+                <p style={{ fontSize:14, color:"var(--text2)", lineHeight:1.6, marginBottom:22 }}>
+                  Understand MTHFR, COMT, histamine intolerance, CBS, and MAO-A — and what to do about each one.
+                </p>
+                <div style={{ display:"flex", gap:10 }}>
+                  <button onClick={() => setTab("checker")} style={{ background:"linear-gradient(135deg,#1e5fa8,#3b7dd8)", color:"#fff", border:"none", borderRadius:12, padding:"12px 22px", fontSize:14, fontWeight:600, letterSpacing:"-0.2px" }}>
+                    Check Symptoms →
+                  </button>
+                  <button onClick={() => setTab("learn")} style={{ background:"rgba(255,255,255,0.06)", border:"1px solid var(--border2)", color:"var(--text2)", borderRadius:12, padding:"12px 18px", fontSize:14 }}>
+                    Learn
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div style={{ background:"#0a1220", border:"1px solid #1e3a5f", borderLeft:"4px solid #2563eb", borderRadius:12, padding:18, marginBottom:18 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
-                <span style={{ fontSize:28 }}>👧</span>
-                <h2 style={{ fontSize:17, fontWeight:"bold", color:"#7eb8f7" }}>Saoirse's Story</h2>
+            {/* Story */}
+            <div style={{ background:"var(--bg2)", border:"1px solid var(--border)", borderLeft:"3px solid var(--accent)", borderRadius:16, padding:20, marginBottom:20 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
+                <div style={{ width:40, height:40, background:"rgba(59,125,216,0.15)", border:"1px solid rgba(59,125,216,0.3)", borderRadius:12, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>👧</div>
+                <div>
+                  <div style={{ fontFamily:"'Playfair Display', serif", fontSize:16, color:"var(--text)", fontWeight:600 }}>Saoirse's Story</div>
+                  <div style={{ fontSize:11, color:"var(--text3)" }}>Why NeuroThrive exists</div>
+                </div>
               </div>
-              <p style={{ fontSize:13, lineHeight:1.7, color:"#8ab0cc", marginBottom:10 }}>James O'Neill's daughter Saoirse was healthy until age 5, when she developed seizures and neurological regression. For years, doctors couldn't find the cause. By age 10, they believed she had a fatal progressive brain disease.</p>
-              <p style={{ fontSize:13, lineHeight:1.7, color:"#8ab0cc", marginBottom:10 }}>A blood test revealed her homocysteine was <strong style={{ color:"#ef4444" }}>350 μmol/L</strong> — over 23 times the safe limit. The cause: severe MTHFR deficiency.</p>
-              <p style={{ fontSize:13, lineHeight:1.7, color:"#7eb8f7", fontStyle:"italic", borderTop:"1px solid #1e3a5f", paddingTop:12 }}>Two months of methylated B vitamins. She walked out of hospital. Seizure-free ever since. This app exists because of her.</p>
+              <p style={{ fontSize:13, lineHeight:1.75, color:"var(--text2)", marginBottom:10 }}>
+                James O'Neill's daughter Saoirse developed seizures at age 5. By age 10, doctors believed she had a fatal progressive brain disease with no cure.
+              </p>
+              <p style={{ fontSize:13, lineHeight:1.75, color:"var(--text2)", marginBottom:12 }}>
+                A blood test revealed her homocysteine was <strong style={{ color:"#ef4444" }}>350 μmol/L</strong> — 23 times the safe limit. Severe MTHFR deficiency.
+              </p>
+              <div style={{ background:"rgba(59,125,216,0.08)", border:"1px solid rgba(59,125,216,0.2)", borderRadius:10, padding:"12px 14px" }}>
+                <p style={{ fontSize:13, fontStyle:"italic", color:"#7eb8f7", lineHeight:1.6, margin:0 }}>
+                  "Two months of methylated B vitamins. She walked out of hospital. Seizure-free ever since. This is why we exist."
+                </p>
+                <div style={{ fontSize:11, color:"var(--text3)", marginTop:6 }}>— James O'Neill, Founder</div>
+              </div>
             </div>
 
+            {/* Gene Cards */}
+            <div style={{ marginBottom:20 }}>
+              <div style={{ fontSize:11, color:"var(--text3)", fontWeight:600, letterSpacing:"1.5px", textTransform:"uppercase", marginBottom:14 }}>Areas We Cover</div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
+                {GENES.map(g => (
+                  <button key={g.id} onClick={() => { setTab("learn"); setExpandedLearn(g.id); }} style={{ background:"var(--bg2)", border:"1px solid var(--border)", borderRadius:14, padding:"14px 10px", display:"flex", flexDirection:"column", alignItems:"center", gap:6, textAlign:"center", transition:"border-color 0.2s" }}>
+                    <div style={{ color:g.color }}>{g.icon}</div>
+                    <div style={{ fontSize:12, fontWeight:600, color:g.color }}>{g.label}</div>
+                    <div style={{ fontSize:10, color:"var(--text3)", lineHeight:1.3 }}>{g.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Stats */}
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10 }}>
-              {LEARN.map(g => (
-                <button key={g.id} onClick={() => { setTab("learn"); setExpandedLearn(g.id); }} style={{ background:"#0a1220", border:"1px solid #1e3a5f", borderRadius:12, padding:"14px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:4, textAlign:"center" }}>
-                  <span style={{ fontSize:22 }}>{g.icon}</span>
-                  <div style={{ fontSize:12, fontWeight:"bold", color:g.color }}>{g.title.split(" ")[0]}</div>
-                  <div style={{ fontSize:10, color:"#4a6fa8", lineHeight:1.3 }}>{g.title.includes("Interactions") ? "Gene combos" : g.title.includes("Histamine") ? "Food reactions" : "Gene variant"}</div>
-                </button>
+              {[
+                { n: "40–60%", l: "carry MTHFR variants" },
+                { n: "350+", l: "Saoirse's homocysteine" },
+                { n: "9", l: "countries covered" },
+              ].map(s => (
+                <div key={s.n} style={{ background:"var(--bg2)", border:"1px solid var(--border)", borderRadius:12, padding:"14px 10px", textAlign:"center" }}>
+                  <div style={{ fontFamily:"'Playfair Display', serif", fontSize:18, fontWeight:700, color:"var(--accent)", marginBottom:4 }}>{s.n}</div>
+                  <div style={{ fontSize:10, color:"var(--text3)", lineHeight:1.4 }}>{s.l}</div>
+                </div>
               ))}
             </div>
           </div>
@@ -259,20 +451,54 @@ function App() {
 
         {/* LEARN */}
         {tab === "learn" && (
-          <div style={{ padding:"18px 14px 100px" }}>
-            <h2 style={{ fontSize:20, fontWeight:"bold", color:"#7eb8f7", marginBottom:6 }}>Methylation Education</h2>
-            <p style={{ fontSize:13, color:"#6a8fb5", marginBottom:18 }}>Tap any topic to expand.</p>
-            {LEARN.map(topic => (
+          <div style={S.page}>
+            <div style={{ marginBottom:20 }}>
+              <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:22, color:"var(--text)", marginBottom:6 }}>Methylation Education</h2>
+              <p style={{ fontSize:13, color:"var(--text3)" }}>Tap any gene to explore its role in your health.</p>
+            </div>
+            {LEARN_CONTENT.map(topic => (
               <div key={topic.id} style={{ marginBottom:10 }}>
-                <button onClick={() => setExpandedLearn(expandedLearn === topic.id ? null : topic.id)} style={{ width:"100%", background:"#0a1220", border:`1px solid ${expandedLearn===topic.id ? topic.color : "#1e3a5f"}`, borderRadius:12, padding:"14px 16px", display:"flex", alignItems:"center", gap:10, textAlign:"left" }}>
-                  <span style={{ fontSize:20 }}>{topic.icon}</span>
-                  <span style={{ flex:1, fontSize:15, fontWeight:"bold", color:topic.color }}>{topic.title}</span>
-                  <span style={{ color:"#4a6fa8", fontSize:12 }}>{expandedLearn===topic.id ? "▲" : "▼"}</span>
+                <button
+                  onClick={() => { setExpandedLearn(expandedLearn===topic.id ? null : topic.id); setExpandedSection(null); }}
+                  style={{ width:"100%", background:"var(--bg2)", border:`1px solid ${expandedLearn===topic.id ? topic.color : "var(--border)"}`, borderRadius:14, padding:"16px 18px", display:"flex", alignItems:"center", gap:12, textAlign:"left", transition:"border-color 0.2s" }}
+                >
+                  <div style={{ color:topic.color }}>{GENES.find(g=>g.id===topic.id)?.icon}</div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:15, fontWeight:600, color:topic.color, marginBottom:2 }}>{topic.title}</div>
+                    {!topic.free && !isPremium && <div style={{ fontSize:10, color:"var(--gold)", fontWeight:600, letterSpacing:"0.5px" }}>✦ PREMIUM</div>}
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="2">
+                    {expandedLearn===topic.id ? <polyline points="18 15 12 9 6 15"/> : <polyline points="6 9 12 15 18 9"/>}
+                  </svg>
                 </button>
-                {expandedLearn === topic.id && (
-                  <div style={{ background:"#080d18", border:"1px solid #1e3a5f", borderTop:"none", borderRadius:"0 0 12px 12px", padding:"14px 16px" }}>
-                    {topic.content.split("\n\n").map((p, i) => (
-                      <p key={i} style={{ fontSize:13, lineHeight:1.7, color:"#8ab0cc", marginBottom:10 }}>{p}</p>
+                {expandedLearn===topic.id && (
+                  <div style={{ background:"var(--bg)", border:"1px solid var(--border)", borderTop:"none", borderRadius:"0 0 14px 14px", overflow:"hidden" }}>
+                    {(!topic.free && !isPremium) ? (
+                      <div style={{ padding:20, textAlign:"center" }}>
+                        <div style={{ fontSize:24, marginBottom:12 }}>✦</div>
+                        <div style={{ fontFamily:"'Playfair Display', serif", fontSize:16, color:"var(--gold)", marginBottom:8 }}>Premium Content</div>
+                        <p style={{ fontSize:13, color:"var(--text3)", marginBottom:16 }}>This section is available to Premium members.</p>
+                        <button onClick={() => setShowUpgrade(true)} style={{ background:"linear-gradient(135deg,#c9a84c,#e8c86a)", color:"#0a0800", border:"none", borderRadius:10, padding:"10px 24px", fontSize:13, fontWeight:700 }}>Upgrade to Premium</button>
+                      </div>
+                    ) : topic.sections.map((sec, si) => (
+                      <div key={si} style={{ borderBottom: si < topic.sections.length-1 ? "1px solid var(--border)" : "none" }}>
+                        <button
+                          onClick={() => setExpandedSection(expandedSection===`${topic.id}-${si}` ? null : `${topic.id}-${si}`)}
+                          style={{ width:"100%", background:"none", border:"none", padding:"14px 18px", display:"flex", alignItems:"center", justifyContent:"space-between", textAlign:"left" }}
+                        >
+                          <span style={{ fontSize:13, color:"var(--text2)", fontWeight:500 }}>{sec.h}</span>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="2">
+                            {expandedSection===`${topic.id}-${si}` ? <polyline points="18 15 12 9 6 15"/> : <polyline points="6 9 12 15 18 9"/>}
+                          </svg>
+                        </button>
+                        {expandedSection===`${topic.id}-${si}` && (
+                          <div style={{ padding:"0 18px 16px" }}>
+                            {sec.t.split("\n\n").map((p, pi) => (
+                              <p key={pi} style={{ fontSize:13, lineHeight:1.75, color:"var(--text3)", marginBottom:10, whiteSpace:"pre-line" }}>{p}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
                 )}
@@ -283,36 +509,47 @@ function App() {
 
         {/* CHECKER */}
         {tab === "checker" && (
-          <div style={{ padding:"18px 14px 100px" }}>
-            <h2 style={{ fontSize:20, fontWeight:"bold", color:"#7eb8f7", marginBottom:6 }}>Symptom Checker</h2>
-            <p style={{ fontSize:13, color:"#6a8fb5", marginBottom:18 }}>Select all symptoms you regularly experience.</p>
+          <div style={S.page}>
+            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:22, color:"var(--text)", marginBottom:6 }}>Symptom Checker</h2>
+            <p style={{ fontSize:13, color:"var(--text3)", marginBottom:20 }}>Select all symptoms you regularly experience. We'll identify which gene variants may be involved.</p>
             {SYMPTOMS.map(group => (
               <div key={group.group} style={{ marginBottom:20 }}>
-                <div style={{ fontSize:11, fontWeight:"bold", color:"#4a6fa8", textTransform:"uppercase", letterSpacing:1, marginBottom:8 }}>{group.group}</div>
+                <div style={{ fontSize:10, fontWeight:700, color:"var(--text3)", textTransform:"uppercase", letterSpacing:"1.5px", marginBottom:10 }}>{group.group}</div>
                 <div style={{ display:"flex", flexWrap:"wrap", gap:8 }}>
                   {group.items.map(s => (
-                    <button key={s.id} onClick={() => toggleSym(s.id)} style={{ background: selectedSymptoms.includes(s.id) ? "rgba(37,99,235,0.15)" : "#0a1220", border:`1px solid ${selectedSymptoms.includes(s.id) ? "#2563eb" : "#1e3a5f"}`, borderRadius:20, color: selectedSymptoms.includes(s.id) ? "#7eb8f7" : "#6a8fb5", padding:"7px 12px", fontSize:12 }}>
-                      {selectedSymptoms.includes(s.id) ? "✓ " : ""}{s.label}
+                    <button key={s.id} onClick={() => toggleSym(s.id)} style={{ background: selectedSymptoms.includes(s.id) ? "rgba(59,125,216,0.15)" : "var(--bg2)", border:`1px solid ${selectedSymptoms.includes(s.id) ? "var(--accent)" : "var(--border)"}`, borderRadius:20, color: selectedSymptoms.includes(s.id) ? "#7eb8f7" : "var(--text3)", padding:"7px 13px", fontSize:12, fontWeight: selectedSymptoms.includes(s.id) ? 500 : 400, transition:"all 0.2s" }}>
+                      {selectedSymptoms.includes(s.id) && "✓ "}{s.label}
                     </button>
                   ))}
                 </div>
               </div>
             ))}
-            <button onClick={analyse} style={{ width:"100%", background:"linear-gradient(135deg,#1e5fa8,#2563eb)", color:"#fff", border:"none", borderRadius:12, padding:14, fontSize:15, fontWeight:"bold", marginBottom:20 }}>Analyse My Symptoms</button>
+            <button onClick={analyse} style={{ width:"100%", background:"linear-gradient(135deg,#1e5fa8,#3b7dd8)", color:"#fff", border:"none", borderRadius:14, padding:16, fontSize:15, fontWeight:600, marginBottom:20, letterSpacing:"-0.2px" }}>
+              Analyse My Symptoms
+            </button>
             {checkerResult && (
-              <div style={{ background:"#0a1220", border:"1px solid #1e3a5f", borderRadius:12, padding:18, marginBottom:16 }}>
-                <h3 style={{ fontSize:16, color:"#7eb8f7", marginBottom:12 }}>Your Methylation Profile</h3>
+              <div style={{ background:"var(--bg2)", border:"1px solid var(--border2)", borderRadius:16, padding:20, marginBottom:16 }}>
+                <div style={{ fontFamily:"'Playfair Display', serif", fontSize:18, color:"var(--text)", marginBottom:14 }}>Your Methylation Profile</div>
                 {checkerResult.genes.length === 0
-                  ? <p style={{ fontSize:13, color:"#8ab0cc" }}>Your symptoms don't strongly indicate specific variants. Consider a homocysteine blood test as a baseline.</p>
+                  ? <p style={{ fontSize:13, color:"var(--text3)" }}>Your pattern doesn't strongly indicate specific variants. Consider a homocysteine blood test as a baseline.</p>
                   : checkerResult.genes.map(g => (
-                    <div key={g.name} style={{ display:"flex", alignItems:"center", gap:10, marginBottom:8 }}>
-                      <div style={{ background:g.color+"22", border:`1px solid ${g.color}`, color:g.color, borderRadius:20, padding:"5px 14px", fontSize:12, fontWeight:"bold" }}>{g.name}</div>
-                      <div style={{ fontSize:11, color:"#4a6fa8" }}>{g.conf} likelihood</div>
+                    <div key={g.name} style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
+                      <div style={{ background:g.color+"22", border:`1px solid ${g.color}`, color:g.color, borderRadius:20, padding:"6px 14px", fontSize:12, fontWeight:600 }}>{g.name}</div>
+                      <div style={{ fontSize:11, color:"var(--text3)" }}>{g.conf} likelihood</div>
                     </div>
                   ))
                 }
-                {checkerResult.genes.length > 0 && <p style={{ fontSize:13, color:"#8ab0cc", marginTop:14 }}>Go to the <strong style={{ color:"#7eb8f7" }}>Protocol tab</strong> for your personalised plan.</p>}
-                <p style={{ fontSize:11, color:"#4a6fa8", borderTop:"1px solid #1e3a5f", paddingTop:12, marginTop:12 }}>⚠️ Informational only. Not a medical diagnosis. Consult your GP.</p>
+                {checkerResult.genes.length > 0 && (
+                  <div style={{ marginTop:16, paddingTop:16, borderTop:"1px solid var(--border)" }}>
+                    <p style={{ fontSize:13, color:"var(--text3)", marginBottom:12 }}>
+                      Based on your profile, NeuroThrive MTHFR Support provides the methylated B vitamins your body needs — at conservative, safe doses.
+                    </p>
+                    <a href="https://neurothrive.ie" target="_blank" style={{ display:"inline-block", background:"rgba(59,125,216,0.1)", border:"1px solid rgba(59,125,216,0.3)", color:"#7eb8f7", borderRadius:10, padding:"8px 16px", fontSize:12, fontWeight:500 }}>
+                      View NeuroThrive Products →
+                    </a>
+                  </div>
+                )}
+                <p style={{ fontSize:11, color:"var(--text3)", borderTop:"1px solid var(--border)", paddingTop:12, marginTop:12 }}>⚠️ Informational only. Not a medical diagnosis. Consult your GP.</p>
               </div>
             )}
           </div>
@@ -320,54 +557,70 @@ function App() {
 
         {/* PROTOCOL */}
         {tab === "protocol" && (
-          <div style={{ padding:"18px 14px 100px" }}>
-            <h2 style={{ fontSize:20, fontWeight:"bold", color:"#7eb8f7", marginBottom:6 }}>Your Protocol</h2>
+          <div style={S.page}>
+            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:22, color:"var(--text)", marginBottom:6 }}>Your Protocol</h2>
             {!checkerResult
-              ? <div style={{ textAlign:"center", padding:"40px 20px" }}>
-                  <div style={{ fontSize:48, marginBottom:16 }}>🧬</div>
-                  <p style={{ fontSize:14, color:"#6a8fb5", marginBottom:20 }}>Run the Symptom Checker first to get your personalised protocol.</p>
-                  <button onClick={() => setTab("checker")} style={{ background:"linear-gradient(135deg,#1e5fa8,#2563eb)", color:"#fff", border:"none", borderRadius:10, padding:"12px 24px", fontSize:14 }}>Go to Checker →</button>
+              ? (
+                <div style={{ textAlign:"center", padding:"40px 20px" }}>
+                  <div style={{ width:64, height:64, background:"var(--bg2)", border:"1px solid var(--border)", borderRadius:20, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 16px" }}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="1.5"><path d="M4 4c0 8 16 4 16 12M4 12c0 8 16 4 16 12" strokeLinecap="round"/></svg>
+                  </div>
+                  <p style={{ fontSize:14, color:"var(--text3)", marginBottom:20 }}>Run the Symptom Checker first to generate your personalised protocol.</p>
+                  <button onClick={() => setTab("checker")} style={{ background:"linear-gradient(135deg,#1e5fa8,#3b7dd8)", color:"#fff", border:"none", borderRadius:12, padding:"12px 24px", fontSize:14, fontWeight:600 }}>Go to Checker →</button>
                 </div>
-              : <>
-                  <p style={{ fontSize:13, color:"#6a8fb5", marginBottom:18 }}>Introduce one thing at a time. Patience is key.</p>
+              ) : (
+                <>
+                  <p style={{ fontSize:13, color:"var(--text3)", marginBottom:20 }}>Introduce one supplement at a time. Patience is key — some people need weeks to adjust.</p>
                   {protocol.map((step, i) => (
-                    <div key={i} style={{ background:"#0a1220", border:"1px solid #1e3a5f", borderLeft:`4px solid ${step.color}`, borderRadius:12, padding:16, marginBottom:12 }}>
-                      <div style={{ fontSize:11, fontWeight:"bold", textTransform:"uppercase", letterSpacing:1, color:step.color, marginBottom:4 }}>{step.title}</div>
-                      {step.items.map((item, j) => <div key={j} style={{ fontSize:13, color:"#7a9ab8", lineHeight:1.6, marginBottom:4 }}>• {item}</div>)}
+                    <div key={i} style={{ background:"var(--bg2)", border:"1px solid var(--border)", borderLeft:`3px solid ${step.color}`, borderRadius:14, padding:18, marginBottom:12 }}>
+                      <div style={{ fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:step.color, marginBottom:6 }}>Step {i+1}</div>
+                      <div style={{ fontSize:15, fontWeight:600, color:"var(--text)", marginBottom:10 }}>{step.title}</div>
+                      {step.items.map((item, j) => (
+                        <div key={j} style={{ display:"flex", gap:8, marginBottom:6 }}>
+                          <div style={{ color:step.color, marginTop:2, flexShrink:0 }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                          </div>
+                          <div style={{ fontSize:13, color:"var(--text2)", lineHeight:1.5 }}>{item}</div>
+                        </div>
+                      ))}
                     </div>
                   ))}
-                  <div style={{ background:"#0a1220", border:"1px solid #1e3a5f", borderRadius:16, padding:18, marginTop:6 }}>
+                  <div style={{ background:"linear-gradient(135deg,rgba(59,125,216,0.08),rgba(59,125,216,0.04))", border:"1px solid rgba(59,125,216,0.2)", borderRadius:16, padding:20 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
-                      <span style={{ fontSize:28 }}>🧬</span>
+                      <div style={{ width:44, height:44, background:"rgba(59,125,216,0.15)", borderRadius:12, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7eb8f7" strokeWidth="1.8"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+                      </div>
                       <div>
-                        <div style={{ fontSize:15, fontWeight:"bold", color:"#7eb8f7" }}>NeuroThrive MTHFR Support</div>
-                        <div style={{ fontSize:12, color:"#4a6fa8" }}>The foundation of your protocol</div>
+                        <div style={{ fontSize:15, fontWeight:600, color:"var(--text)" }}>NeuroThrive MTHFR Support</div>
+                        <div style={{ fontSize:11, color:"var(--text3)" }}>The foundation of your protocol</div>
                       </div>
                     </div>
                     <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:14 }}>
                       {["P5P B6 1.5mg","Methylfolate 400mcg","Methylcobalamin B12 1000mcg"].map(i => (
-                        <span key={i} style={{ background:"rgba(37,99,235,0.15)", border:"1px solid rgba(37,99,235,0.3)", color:"#7eb8f7", borderRadius:20, padding:"4px 12px", fontSize:11 }}>{i}</span>
+                        <span key={i} style={{ background:"rgba(59,125,216,0.12)", border:"1px solid rgba(59,125,216,0.25)", color:"#7eb8f7", borderRadius:20, padding:"4px 12px", fontSize:11 }}>{i}</span>
                       ))}
                     </div>
-                    <a href="https://neurothrive.ie" target="_blank" style={{ display:"block", background:"linear-gradient(135deg,#1e5fa8,#2563eb)", color:"#fff", borderRadius:12, padding:14, textAlign:"center", fontSize:14, fontWeight:"bold" }}>Buy on NeuroThrive.ie →</a>
+                    <a href="https://neurothrive.ie" target="_blank" style={{ display:"block", background:"linear-gradient(135deg,#1e5fa8,#3b7dd8)", color:"#fff", borderRadius:12, padding:14, textAlign:"center", fontSize:14, fontWeight:600, letterSpacing:"-0.2px" }}>
+                      Buy on NeuroThrive.ie →
+                    </a>
                   </div>
                 </>
+              )
             }
           </div>
         )}
 
         {/* DIET */}
         {tab === "diet" && (
-          <div style={{ padding:"18px 14px 100px" }}>
-            <h2 style={{ fontSize:20, fontWeight:"bold", color:"#7eb8f7", marginBottom:6 }}>Diet & Lifestyle</h2>
-            <p style={{ fontSize:13, color:"#6a8fb5", marginBottom:18 }}>What you eat has a profound impact on methylation.</p>
+          <div style={S.page}>
+            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:22, color:"var(--text)", marginBottom:6 }}>Diet & Lifestyle</h2>
+            <p style={{ fontSize:13, color:"var(--text3)", marginBottom:20 }}>What you eat has a profound impact on methylation. These guidelines apply to most people with MTHFR.</p>
             {DIET.map(rule => (
-              <div key={rule.cat} style={{ background:"#0a1220", border:"1px solid #1e3a5f", borderLeft:`4px solid ${rule.color}`, borderRadius:12, padding:16, marginBottom:12 }}>
-                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
-                  <span style={{ fontSize:18 }}>{rule.icon}</span>
-                  <span style={{ fontSize:14, fontWeight:"bold", color:rule.color }}>{rule.cat}</span>
-                </div>
-                {rule.items.map((item, i) => <div key={i} style={{ fontSize:12, color:"#7a9ab8", lineHeight:1.6, marginBottom:4 }}>{item}</div>)}
+              <div key={rule.cat} style={{ background:"var(--bg2)", border:"1px solid var(--border)", borderLeft:`3px solid ${rule.color}`, borderRadius:14, padding:18, marginBottom:12 }}>
+                <div style={{ fontSize:13, fontWeight:600, color:rule.color, marginBottom:12 }}>{rule.cat}</div>
+                {rule.items.map((item, i) => (
+                  <div key={i} style={{ fontSize:13, color:"var(--text3)", lineHeight:1.6, marginBottom:5, paddingLeft:12, borderLeft:"1px solid var(--border)" }}>{item}</div>
+                ))}
               </div>
             ))}
           </div>
@@ -375,36 +628,38 @@ function App() {
 
         {/* TRACKER */}
         {tab === "tracker" && (
-          <div style={{ padding:"18px 14px 100px" }}>
-            <h2 style={{ fontSize:20, fontWeight:"bold", color:"#7eb8f7", marginBottom:6 }}>Symptom Tracker</h2>
-            <p style={{ fontSize:13, color:"#6a8fb5", marginBottom:18 }}>Log daily to track your progress on the protocol.</p>
-            <div style={{ background:"#0a1220", border:"1px solid #1e3a5f", borderRadius:12, padding:16, marginBottom:18 }}>
-              <div style={{ fontSize:13, color:"#7eb8f7", fontWeight:"bold", marginBottom:14 }}>Today — {new Date().toLocaleDateString("en-IE")}</div>
+          <div style={S.page}>
+            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:22, color:"var(--text)", marginBottom:6 }}>Daily Tracker</h2>
+            <p style={{ fontSize:13, color:"var(--text3)", marginBottom:20 }}>Log how you feel each day to track your progress on the protocol.</p>
+            <div style={{ background:"var(--bg2)", border:"1px solid var(--border)", borderRadius:16, padding:18, marginBottom:20 }}>
+              <div style={{ fontSize:13, fontWeight:600, color:"var(--accent)", marginBottom:16 }}>{new Date().toLocaleDateString("en-IE", { weekday:"long", day:"numeric", month:"long" })}</div>
               {TRACKER_ITEMS.map((item, i) => (
-                <div key={i} style={{ marginBottom:14 }}>
-                  <div style={{ fontSize:12, color:"#6a8fb5", marginBottom:6 }}>{item} (1–10)</div>
-                  <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
+                <div key={i} style={{ marginBottom:16 }}>
+                  <div style={{ fontSize:12, color:"var(--text2)", marginBottom:8, fontWeight:500 }}>{item} <span style={{ color:"var(--text3)", fontWeight:400 }}>(1–10)</span></div>
+                  <div style={{ display:"flex", gap:5 }}>
                     {[1,2,3,4,5,6,7,8,9,10].map(n => (
-                      <button key={n} onClick={() => gate(() => setScores(p => ({ ...p, [i]: n })))} style={{ background: scores[i]===n ? "rgba(37,99,235,0.3)" : "#080d18", border:`1px solid ${scores[i]===n ? "#2563eb" : "#1e3a5f"}`, color: scores[i]===n ? "#7eb8f7" : "#4a6fa8", borderRadius:6, width:28, height:28, fontSize:11 }}>{n}</button>
+                      <button key={n} onClick={() => gate(() => setScores(p => ({ ...p, [i]: n })))} style={{ flex:1, height:32, background: scores[i]===n ? "var(--accent)" : "var(--bg3)", border:`1px solid ${scores[i]===n ? "var(--accent)" : "var(--border)"}`, borderRadius:8, color: scores[i]===n ? "#fff" : "var(--text3)", fontSize:11, fontWeight: scores[i]===n ? 600 : 400, transition:"all 0.15s" }}>
+                        {n}
+                      </button>
                     ))}
                   </div>
                 </div>
               ))}
-              <input value={note} onChange={e => setNote(e.target.value)} placeholder="Notes for today..." style={{ width:"100%", background:"#080d18", border:"1px solid #1e3a5f", borderRadius:8, padding:"10px 12px", fontSize:12, color:"#e2e8f0", marginBottom:12, outline:"none" }} />
-              <button onClick={saveTracker} style={{ width:"100%", background:"linear-gradient(135deg,#1e5fa8,#2563eb)", color:"#fff", border:"none", borderRadius:10, padding:12, fontSize:14, fontWeight:"bold" }}>Save Entry</button>
+              <input value={note} onChange={e => setNote(e.target.value)} placeholder="Notes for today..." style={{ width:"100%", background:"var(--bg)", border:"1px solid var(--border)", borderRadius:10, padding:"10px 14px", fontSize:13, color:"var(--text)", marginBottom:14, outline:"none" }} />
+              <button onClick={saveTracker} style={{ width:"100%", background:"linear-gradient(135deg,#1e5fa8,#3b7dd8)", color:"#fff", border:"none", borderRadius:12, padding:14, fontSize:14, fontWeight:600 }}>Save Entry</button>
             </div>
             {entries.length > 0 && (
               <div>
-                <div style={{ fontSize:14, fontWeight:"bold", color:"#7eb8f7", marginBottom:10 }}>Recent Entries</div>
+                <div style={{ fontSize:11, fontWeight:700, color:"var(--text3)", textTransform:"uppercase", letterSpacing:"1px", marginBottom:12 }}>Recent Entries</div>
                 {entries.slice(0,7).map((entry, i) => (
-                  <div key={i} style={{ background:"#0a1220", border:"1px solid #1e3a5f", borderRadius:10, padding:12, marginBottom:8 }}>
-                    <div style={{ fontSize:12, color:"#4a6fa8", marginBottom:6 }}>{entry.date}</div>
-                    <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:4 }}>
+                  <div key={i} style={{ background:"var(--bg2)", border:"1px solid var(--border)", borderRadius:12, padding:14, marginBottom:8 }}>
+                    <div style={{ fontSize:12, color:"var(--text3)", marginBottom:8 }}>{entry.date}</div>
+                    <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom: entry.note ? 8 : 0 }}>
                       {Object.values(entry.scores).map((s, j) => (
-                        <span key={j} style={{ fontSize:14, fontWeight:"bold", color: s>=7 ? "#22c55e" : s>=4 ? "#f59e0b" : "#ef4444" }}>{s}</span>
+                        <div key={j} style={{ background: s>=7 ? "rgba(34,197,94,0.15)" : s>=4 ? "rgba(245,158,11,0.15)" : "rgba(239,68,68,0.15)", border:`1px solid ${s>=7 ? "#22c55e" : s>=4 ? "#f59e0b" : "#ef4444"}`, borderRadius:8, padding:"3px 10px", fontSize:12, fontWeight:600, color: s>=7 ? "#22c55e" : s>=4 ? "#f59e0b" : "#ef4444" }}>{s}</div>
                       ))}
                     </div>
-                    {entry.note && <div style={{ fontSize:11, color:"#6a8fb5" }}>{entry.note}</div>}
+                    {entry.note && <div style={{ fontSize:12, color:"var(--text3)", fontStyle:"italic" }}>{entry.note}</div>}
                   </div>
                 ))}
               </div>
@@ -414,45 +669,79 @@ function App() {
 
         {/* CHAT */}
         {tab === "chat" && (
-          <div style={{ padding:"18px 14px 0", display:"flex", flexDirection:"column", height:"calc(100vh - 112px)" }}>
-            <h2 style={{ fontSize:20, fontWeight:"bold", color:"#7eb8f7", marginBottom:6 }}>Methylation Assistant</h2>
-            <p style={{ fontSize:13, color:"#6a8fb5", marginBottom:14 }}>Ask anything about MTHFR, COMT, histamine, CBS, or your protocol.</p>
-            <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column", gap:10, paddingBottom:12 }}>
+          <div style={S.chatPage}>
+            <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:22, color:"var(--text)", marginBottom:4 }}>Ask the AI</h2>
+            <p style={{ fontSize:13, color:"var(--text3)", marginBottom:14 }}>Expert answers on MTHFR, COMT, histamine, CBS, testing, and protocols.</p>
+            <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column", gap:12, paddingBottom:16 }}>
               {messages.map((msg, i) => (
-                <div key={i} style={{ maxWidth:"85%", borderRadius:12, padding:"11px 14px", fontSize:13, lineHeight:1.6, alignSelf: msg.role==="user" ? "flex-end" : "flex-start", background: msg.role==="user" ? "linear-gradient(135deg,#1e5fa8,#2563eb)" : "#0a1220", color: msg.role==="user" ? "#fff" : "#9ab8cc", border: msg.role==="user" ? "none" : "1px solid #1e3a5f", borderBottomRightRadius: msg.role==="user" ? 4 : 12, borderBottomLeftRadius: msg.role==="user" ? 12 : 4 }}>
+                <div key={i} style={{ maxWidth:"88%", borderRadius:16, padding:"12px 15px", fontSize:13, lineHeight:1.65, alignSelf: msg.role==="user" ? "flex-end" : "flex-start", background: msg.role==="user" ? "linear-gradient(135deg,#1e5fa8,#3b7dd8)" : "var(--bg2)", color: msg.role==="user" ? "#fff" : "var(--text2)", border: msg.role==="user" ? "none" : "1px solid var(--border)", borderBottomRightRadius: msg.role==="user" ? 4 : 16, borderBottomLeftRadius: msg.role==="user" ? 16 : 4 }}>
                   {msg.content}
                 </div>
               ))}
-              {loading && <div style={{ maxWidth:"85%", borderRadius:12, padding:"11px 14px", fontSize:13, background:"#0a1220", border:"1px solid #1e3a5f", color:"#5a7fa8", fontStyle:"italic" }}>Thinking...</div>}
+              {loading && (
+                <div style={{ alignSelf:"flex-start", background:"var(--bg2)", border:"1px solid var(--border)", borderRadius:16, borderBottomLeftRadius:4, padding:"12px 15px" }}>
+                  <div style={{ display:"flex", gap:4 }}>
+                    {[0,1,2].map(i => <div key={i} style={{ width:6, height:6, background:"var(--text3)", borderRadius:"50%", animation:`pulse 1.2s ease-in-out ${i*0.2}s infinite` }} />)}
+                  </div>
+                </div>
+              )}
               <div ref={chatEnd} />
             </div>
-            <div style={{ display:"flex", gap:8, padding:"10px 0 18px", borderTop:"1px solid #1e3a5f" }}>
-              <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key==="Enter" && sendMessage()} placeholder="Ask about methylation..." style={{ flex:1, background:"#0a1220", border:"1px solid #1e3a5f", borderRadius:10, padding:"11px 14px", fontSize:13, color:"#e2e8f0", outline:"none" }} />
-              <button onClick={sendMessage} style={{ background:"linear-gradient(135deg,#1e5fa8,#2563eb)", color:"#fff", border:"none", borderRadius:10, padding:"11px 16px", fontSize:13, fontWeight:"bold" }}>Send</button>
+            <div style={{ display:"flex", gap:10, padding:"12px 0 20px", borderTop:"1px solid var(--border)" }}>
+              <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key==="Enter" && sendMessage()} placeholder="Ask about methylation..." style={{ flex:1, background:"var(--bg2)", border:"1px solid var(--border)", borderRadius:24, padding:"12px 18px", fontSize:13, color:"var(--text)", outline:"none" }} />
+              <button onClick={sendMessage} style={{ width:44, height:44, background:"linear-gradient(135deg,#1e5fa8,#3b7dd8)", border:"none", borderRadius:"50%", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
             </div>
           </div>
         )}
 
-      </div>
+      </main>
 
-      {/* Paywall */}
-      {showPaywall && (
-        <div onClick={() => setShowPaywall(false)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000, padding:20 }}>
-          <div onClick={e => e.stopPropagation()} style={{ background:"#0a1220", border:"1px solid #1e3a5f", borderRadius:20, padding:"28px 22px", width:"100%", maxWidth:380, textAlign:"center" }}>
-            <div style={{ fontSize:48, marginBottom:16 }}>🧬</div>
-            <h2 style={{ fontSize:21, fontWeight:"bold", color:"#7eb8f7", marginBottom:10 }}>Unlock Full Access</h2>
-            <p style={{ fontSize:13, color:"#6a8fb5", lineHeight:1.6, marginBottom:18 }}>Get the full Methylation Health toolkit — symptom analysis, personalised protocols, progress tracking, and AI guidance.</p>
-            <div style={{ background:"rgba(37,99,235,0.08)", borderRadius:12, padding:16, marginBottom:18, textAlign:"left" }}>
-              {["✓ Full symptom analysis across 5 gene variants","✓ Personalised supplement protocol","✓ Daily symptom tracker","✓ AI Methylation Assistant","✓ Diet & lifestyle guides"].map(f => (
-                <div key={f} style={{ fontSize:13, color:"#9ab8cc", marginBottom:7 }}>{f}</div>
+      {/* Upgrade Modal */}
+      {showUpgrade && (
+        <div onClick={() => setShowUpgrade(false)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"flex-end", justifyContent:"center", zIndex:1000, padding:"0 0 0" }}>
+          <div onClick={e => e.stopPropagation()} style={{ background:"var(--bg2)", border:"1px solid var(--border2)", borderRadius:"24px 24px 0 0", padding:"28px 24px 40px", width:"100%", maxWidth:480 }}>
+            <div style={{ width:40, height:4, background:"var(--border2)", borderRadius:2, margin:"0 auto 24px" }} />
+            <div style={{ textAlign:"center", marginBottom:24 }}>
+              <div style={{ fontSize:32, marginBottom:12 }}>✦</div>
+              <h2 style={{ fontFamily:"'Playfair Display', serif", fontSize:24, color:"var(--gold)", marginBottom:10 }}>Upgrade to Premium</h2>
+              <p style={{ fontSize:14, color:"var(--text3)", lineHeight:1.6 }}>Unlock the complete Methylation Health toolkit — everything you need to understand and act on your genetics.</p>
+            </div>
+            <div style={{ background:"rgba(201,168,76,0.06)", border:"1px solid rgba(201,168,76,0.2)", borderRadius:16, padding:20, marginBottom:24 }}>
+              {[
+                "Full symptom analysis across 5 gene variants",
+                "Personalised supplement protocol",
+                "Daily symptom tracker with history",
+                "AI Methylation Assistant — unlimited questions",
+                "Complete diet & lifestyle guides",
+                "Histamine, CBS, and MAO-A deep dives",
+                "Gene interaction combinations",
+              ].map(f => (
+                <div key={f} style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <div style={{ fontSize:13, color:"var(--text2)" }}>{f}</div>
+                </div>
               ))}
             </div>
-            <div style={{ fontSize:26, fontWeight:"bold", color:"#7eb8f7", marginBottom:18 }}>€4.99 / month</div>
-            <button onClick={() => { setSubscribed(true); setShowPaywall(false); }} style={{ width:"100%", background:"linear-gradient(135deg,#1e5fa8,#2563eb)", color:"#fff", border:"none", borderRadius:12, padding:14, fontSize:15, fontWeight:"bold", marginBottom:10, display:"block" }}>Start Subscription</button>
-            <button onClick={() => setShowPaywall(false)} style={{ width:"100%", background:"none", border:"none", color:"#4a6fa8", fontSize:13, padding:8 }}>Maybe later</button>
+            <div style={{ textAlign:"center", marginBottom:20 }}>
+              <div style={{ fontFamily:"'Playfair Display', serif", fontSize:32, fontWeight:700, color:"var(--text)" }}>€9.99</div>
+              <div style={{ fontSize:13, color:"var(--text3)" }}>per month — cancel anytime</div>
+            </div>
+            <button onClick={() => { setTier("premium"); setShowUpgrade(false); }} style={{ width:"100%", background:"linear-gradient(135deg,#c9a84c,#e8c86a)", color:"#0a0800", border:"none", borderRadius:14, padding:16, fontSize:16, fontWeight:700, marginBottom:12, letterSpacing:"-0.2px" }}>
+              Start Premium Membership
+            </button>
+            <button onClick={() => setShowUpgrade(false)} style={{ width:"100%", background:"none", border:"none", color:"var(--text3)", fontSize:13, padding:8 }}>Maybe later</button>
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 0.3; transform: translateY(0); }
+          50% { opacity: 1; transform: translateY(-3px); }
+        }
+      `}</style>
     </div>
   );
 }
@@ -461,4 +750,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(
 </script>
 </body>
 </html>
-
