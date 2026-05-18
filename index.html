@@ -728,7 +728,7 @@ function App() {
               <div style={{ fontFamily:"'Playfair Display', serif", fontSize:32, fontWeight:700, color:"var(--text)" }}>€9.99</div>
               <div style={{ fontSize:13, color:"var(--text3)" }}>per month — cancel anytime</div>
             </div>
-            <button onClick={() => { setTier("premium"); setShowUpgrade(false); }} style={{ width:"100%", background:"linear-gradient(135deg,#c9a84c,#e8c86a)", color:"#0a0800", border:"none", borderRadius:14, padding:16, fontSize:16, fontWeight:700, marginBottom:12, letterSpacing:"-0.2px" }}>
+            <button onClick={() => { window.open("https://buy.stripe.com/3cI7sKag4aLp91g3rM0co06", "_blank"); }} style={{ width:"100%", background:"linear-gradient(135deg,#c9a84c,#e8c86a)", color:"#0a0800", border:"none", borderRadius:14, padding:16, fontSize:16, fontWeight:700, marginBottom:12, letterSpacing:"-0.2px" }}>
               Start Premium Membership
             </button>
             <button onClick={() => setShowUpgrade(false)} style={{ width:"100%", background:"none", border:"none", color:"var(--text3)", fontSize:13, padding:8 }}>Maybe later</button>
